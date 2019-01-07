@@ -71,19 +71,19 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <IncludePath>C:\Users\Joas\Documents\Visual Studio 2017\Libraries\glm;C:\Users\Joas\Documents\Visual Studio 2017\Libraries\glfw-3.2.1.bin.WIN32\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\Joas\Documents\Visual Studio 2017\Libraries\glm;$(LibraryPath)</LibraryPath>
+    <LibraryPath>C:\Users\Joas\Documents\Visual Studio 2017\Libraries\glfw-3.2.1.bin.WIN32;C:\Users\Joas\Documents\Visual Studio 2017\Libraries\glm;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <IncludePath>C:\Users\Joas\Documents\Visual Studio 2017\Libraries\glm;C:\Users\Joas\Documents\Visual Studio 2017\Libraries\glfw-3.2.1.bin.WIN32\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\Joas\Documents\Visual Studio 2017\Libraries\glm;$(LibraryPath)</LibraryPath>
+    <LibraryPath>C:\Users\Joas\Documents\Visual Studio 2017\Libraries\glfw-3.2.1.bin.WIN32;C:\Users\Joas\Documents\Visual Studio 2017\Libraries\glm;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <IncludePath>C:\Users\Joas\Documents\Visual Studio 2017\Libraries\glm;C:\Users\Joas\Documents\Visual Studio 2017\Libraries\glfw-3.2.1.bin.WIN32\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\Joas\Documents\Visual Studio 2017\Libraries\glm;$(LibraryPath)</LibraryPath>
+    <LibraryPath>C:\Users\Joas\Documents\Visual Studio 2017\Libraries\glfw-3.2.1.bin.WIN32;C:\Users\Joas\Documents\Visual Studio 2017\Libraries\glm;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IncludePath>C:\Users\Joas\Documents\Visual Studio 2017\Libraries\glm;C:\Users\Joas\Documents\Visual Studio 2017\Libraries\glfw-3.2.1.bin.WIN32\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\Joas\Documents\Visual Studio 2017\Libraries\glm;$(LibraryPath)</LibraryPath>
+    <LibraryPath>C:\Users\Joas\Documents\Visual Studio 2017\Libraries\glfw-3.2.1.bin.WIN32;C:\Users\Joas\Documents\Visual Studio 2017\Libraries\glm;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -147,6 +147,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="shader_s.h" />
+    <ClInclude Include="stb_image.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\..\..\..\Desktop\test_instalki\textures\texture.jpg" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
