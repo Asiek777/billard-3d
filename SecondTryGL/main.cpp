@@ -21,38 +21,25 @@
 int screenWidth = 800, screenHeight = 600;
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
-Camera camera(glm::vec3(0.f, 0.f, 3.f));
+FreeCamera freeCamera(glm::vec3(0.f, 0.f, 55.f));
+ConstCamera constCamera = ConstCamera();
+ToBallCamera toBallCamera(glm::vec3(0.f, 0.f, 0.f));
+FollowCamera followCamera(glm::vec3(0.f, 0.f, 0.f));
+Camera *camera = &followCamera;
+Camera *cameras[] = { &freeCamera, &constCamera, &toBallCamera, &followCamera };
 float lastX = screenWidth / 2.f, lastY = screenHeight / 2.f;
 bool firstMouse = true;
+Sphere whiteBall(glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
 
 
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow *window);
+void changeCamera();
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 
 
-//void prepareTexture(unsigned int& tex, const char* pathToImage)
-//{
-//	int width, height, nrChannels;
-//	glGenTextures(1, &tex);
-//	glBindTexture(GL_TEXTURE_2D, tex);
-//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-//	unsigned char *data = stbi_load(pathToImage, &width, &height, &nrChannels, 0);
-//	if (data)
-//	{
-//		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-//		glGenerateMipmap(GL_TEXTURE_2D);
-//	}
-//	else {
-//		std::cout << "Failed to load texture" << std::endl;
-//	}
-//	stbi_image_free(data);
-//}
 
 
 int main() {
@@ -82,19 +69,18 @@ int main() {
 	glEnable(GL_DEPTH_TEST);
 	
 	Sphere spheres[] = {
-		Sphere(glm::vec3(1.0f, 1.0f, 1.0f),	glm::vec3(0.0f,  0.0f,  0.0f)),
-		Sphere(glm::vec3(1.0f, 1.0f, 0.0f),	glm::vec3(2.0f,  5.0f, -15.0f)),
-		Sphere(glm::vec3(1.0f, 0.0f, 0.0f),	glm::vec3(-1.5f, -2.2f, -2.5f)),
-		Sphere(glm::vec3(0.0f, 1.0f, 0.0f),	glm::vec3(-3.8f, -2.0f, -12.3f)),
-		Sphere(glm::vec3(0.2f, 0.0f, 1.0f),	glm::vec3(2.4f, -0.4f, -3.5f)),
-		Sphere(glm::vec3(0.0f, 0.4f, 0.5f),	glm::vec3(-1.7f,  3.0f, -7.5f)),
-		Sphere(glm::vec3(0.1f, 0.4f, 0.0f),	glm::vec3(1.3f, -2.0f, -2.5f)),
-		Sphere(glm::vec3(1.0f, 0.4f, 0.0f),	glm::vec3(1.5f,  2.0f, -2.5f)),
-		Sphere(glm::vec3(1.0f, 0.4f, 0.6f),	glm::vec3(1.5f,  0.2f, -1.5f)),
-		Sphere(glm::vec3(0.0f, 0.9f, 0.1f),	glm::vec3(-1.3f,  1.0f, -1.5f))
+		Sphere(glm::vec3(1.0f, 1.0f, 0.0f),	glm::vec3(2.0f,  5.0f, 0.0f)),
+		Sphere(glm::vec3(1.0f, 0.0f, 0.0f),	glm::vec3(-1.5f, -2.2f, 0.0f)),
+		Sphere(glm::vec3(0.0f, 1.0f, 0.0f),	glm::vec3(-3.8f, -2.0f, 0.0f)),
+		Sphere(glm::vec3(0.2f, 0.0f, 1.0f),	glm::vec3(3.4f, -5.4f, 0.0f)),
+		Sphere(glm::vec3(0.0f, 0.4f, 0.5f),	glm::vec3(-1.7f,  3.0f, 0.0f)),
+		Sphere(glm::vec3(0.1f, 0.4f, 0.0f),	glm::vec3(1.3f, -2.0f, 0.0f)),
+		Sphere(glm::vec3(1.0f, 0.4f, 0.0f),	glm::vec3(1.5f,  2.0f, 0.0f)),
+		Sphere(glm::vec3(1.0f, 0.4f, 0.6f),	glm::vec3(1.5f,  0.2f, 0.0f)),
+		Sphere(glm::vec3(0.0f, 0.9f, 0.1f),	glm::vec3(-1.3f,  1.0f, 0.0f))
 	};
 
-	Board table(3, 3);
+	Board table(30, 20);
 	//Cube cubes = Cube(glm::vec3(-1.0, -1.0, -1.0), glm::vec3(1.0f, 1.0f, 2.0f), glm::vec3(1.0f, 0.4f, 0.6f));
 
 	
@@ -134,7 +120,7 @@ int main() {
 	Shader ballShader("ball.vert", "ball.frag");
 
 	ballShader.use();
-
+	ballShader.setVec3("lightPos", glm::vec3(4.0f, -3.0f, 4.0f));
 	glm::mat4 projection;
 
 
@@ -145,31 +131,34 @@ int main() {
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-
-		ballShader.use();
 		float currentFrame = glfwGetTime();
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
-		glm::mat4 view = camera.GetViewMatrix();
+
+		ballShader.use();
+
+		glm::mat4 view = camera->GetViewMatrix();
 		ballShader.setMat4("view", view);
 
-		projection = glm::perspective(glm::radians(camera.Zoom), (float)screenWidth / screenHeight, 0.1f, 100.0f);
+		projection = glm::perspective(glm::radians(camera->getZoom()), (float)screenWidth / screenHeight, 0.1f, 100.0f);
 		ballShader.setMat4("projection", projection);
+		ballShader.setVec3("viewPos", camera->getPosition());
 
 		glBindVertexArray(ballVAO);
-
-		for (unsigned int i = 0; i < 10; i++)
+		for (unsigned int i = 0; i < 9; i++)
 		{
-			ballShader.setVec3("color", spheres[i].color);
+			ballShader.setVec3("ballColor", spheres[i].color);
 			ballShader.setMat4("model", spheres[i].getModelMatrix());
-			//glDrawArrays(GL_POINTS, 0, sphere.dataSize * 6);
 			glDrawElements(GL_TRIANGLES, Sphere::indices().size(), GL_UNSIGNED_SHORT, 0);
 		}
+		ballShader.setVec3("ballColor", whiteBall.color);
+		ballShader.setMat4("model", whiteBall.getModelMatrix());
+		glDrawElements(GL_TRIANGLES, Sphere::indices().size(), GL_UNSIGNED_SHORT, 0);
 
 		glBindVertexArray(cubeVAO);
 		for (int i = 0; i < table.cubeCount; i++)
 		{
-			ballShader.setVec3("color", table[i].color);
+			ballShader.setVec3("ballColor", table[i].color);
 			ballShader.setMat4("model", table[i].getModelMatrix());
 			glDrawArrays(GL_TRIANGLES, 0, 36);
 		}
@@ -208,23 +197,45 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
 	lastX = xpos;
 	lastY = ypos;
 
-	camera.ProcessMouseMovement(xoffset, yoffset);
+	freeCamera.ProcessMouseMovement(xoffset, yoffset);
 }
 
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
-	camera.ProcessMouseScroll(yoffset);
+	camera->ProcessMouseScroll(yoffset);
 }
 
 void processInput(GLFWwindow *window) {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true);
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-		camera.ProcessKeyboard(FORWARD, deltaTime);
+		freeCamera.ProcessKeyboard(FORWARD, deltaTime);
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-		camera.ProcessKeyboard(BACKWARD, deltaTime);
+		freeCamera.ProcessKeyboard(BACKWARD, deltaTime);
 	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-		camera.ProcessKeyboard(LEFT, deltaTime);
+		freeCamera.ProcessKeyboard(LEFT, deltaTime);
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-		camera.ProcessKeyboard(RIGHT, deltaTime);
+		freeCamera.ProcessKeyboard(RIGHT, deltaTime);
+	if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
+	{
+		whiteBall.moveUp();
+		toBallCamera.updateBallPosition(whiteBall.location);
+		followCamera.updateBallPosition(whiteBall.location);
+	}
+	if (glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS)
+		changeCamera();
+	if (glfwGetKey(window, GLFW_KEY_0) == GLFW_PRESS)
+		camera = cameras[0];
+	if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS)
+		camera = cameras[1];
+	if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS)
+		camera = cameras[2];
+	if (glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS)
+		camera = cameras[3];
+}
+
+void changeCamera() {
+	static int i = 0;
+	i = (i + 1) % 4;
+	camera = cameras[i];
 }

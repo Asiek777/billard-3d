@@ -22,8 +22,55 @@ const float SPEED = 2.5f;
 const float SENSITIVITY = 0.1f;
 const float ZOOM = 45.0f;
 
+class  Camera {
+public:
+	virtual float getZoom() = 0;
+	virtual glm::vec3 getPosition() = 0;
+	virtual glm::mat4 GetViewMatrix() = 0;
+	virtual void ProcessMouseScroll(float yoffset) = 0;
+};
 
-class Camera
+class ConstCamera : public Camera {
+	float Zoom;
+	glm::vec3 Position;
+public:
+	ConstCamera();
+	virtual float getZoom() override;
+	virtual glm::mat4 GetViewMatrix() override;
+	virtual void ProcessMouseScroll(float yoffset) override;
+	virtual glm::vec3 getPosition() override;
+};
+
+class ToBallCamera : public Camera {
+	float Zoom;
+	glm::vec3 Position;
+	glm::vec3 BallPosition;
+public:
+	void updateBallPosition(glm::vec3 ballPosition);
+
+	ToBallCamera(glm::vec3 ballPosition);
+	virtual float getZoom() override;
+	virtual glm::mat4 GetViewMatrix() override;
+	virtual void ProcessMouseScroll(float yoffset) override;
+	virtual glm::vec3 getPosition() override;
+};
+
+class FollowCamera : public Camera {
+private:
+	float Zoom;
+	glm::vec3 Position;
+	glm::vec3 BallPosition;
+public:
+	void updateBallPosition(glm::vec3 ballPosition);
+
+	FollowCamera(glm::vec3 ballPosition);
+	virtual float getZoom() override;
+	virtual glm::vec3 getPosition() override;
+	virtual glm::mat4 GetViewMatrix() override;
+	virtual void ProcessMouseScroll(float yoffset) override;
+};
+
+class FreeCamera : public Camera
 {
 public:
 	glm::vec3 Position;
@@ -37,7 +84,7 @@ public:
 	float MouseSensitivity;
 	float Zoom;
 
-	Camera(glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f), float yaw = YAW, float pitch = PITCH) : Front(glm::vec3(0.0f, 0.0f, -1.0f)), MovementSpeed(SPEED), MouseSensitivity(SENSITIVITY), Zoom(ZOOM)
+	FreeCamera(glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f), float yaw = YAW, float pitch = PITCH) : Front(glm::vec3(0.0f, 0.0f, -1.0f)), MovementSpeed(SPEED), MouseSensitivity(SENSITIVITY), Zoom(ZOOM)
 	{
 		Position = position;
 		WorldUp = up;
@@ -46,7 +93,7 @@ public:
 		updateCameraVectors();
 	}
 	// Constructor with scalar values
-	Camera(float posX, float posY, float posZ, float upX, float upY, float upZ, float yaw, float pitch) : Front(glm::vec3(0.0f, 0.0f, -1.0f)), MovementSpeed(SPEED), MouseSensitivity(SENSITIVITY), Zoom(ZOOM)
+	FreeCamera(float posX, float posY, float posZ, float upX, float upY, float upZ, float yaw, float pitch) : Front(glm::vec3(0.0f, 0.0f, -1.0f)), MovementSpeed(SPEED), MouseSensitivity(SENSITIVITY), Zoom(ZOOM)
 	{
 		Position = glm::vec3(posX, posY, posZ);
 		WorldUp = glm::vec3(upX, upY, upZ);
@@ -58,6 +105,16 @@ public:
 	glm::mat4 GetViewMatrix()
 	{
 		return glm::lookAt(Position, Position + Front, Up);
+	}
+
+	float getZoom()
+	{
+		return Zoom;
+	}
+
+	glm::vec3 getPosition()
+	{
+		return Position;
 	}
 
 	void ProcessKeyboard(Camera_Movement direction, float deltaTime)
@@ -91,6 +148,7 @@ public:
 
 		updateCameraVectors();
 	}
+
 
 	void ProcessMouseScroll(float yoffset)
 	{

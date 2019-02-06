@@ -13,6 +13,7 @@ class Sphere {
 private:
 	glm::mat4 modelMat;
 	static SphereSolid solid;
+	void updateModelMat();
 
 public:
 	glm::vec3 color;
@@ -27,6 +28,7 @@ public:
 			glm::vec3(Colorx, Colory, Colorz),
 			glm::vec3(Locationx, Locationy, Locationz)
 		) {}
+	void moveUp();
 };
 
 
