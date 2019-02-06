@@ -4,11 +4,31 @@
 #include <glm/glm.hpp>
 #include <GL/gl.h>
 #include <vector>
+#include <glm\gtc\matrix_transform.hpp>
+
+
+class SphereSolid;
+
+class Sphere {
+private:
+	glm::mat4 modelMat;
+	static SphereSolid solid;
+
+public:
+
+	glm::vec3 color;
+	glm::vec3 location;
+
+	static std::vector<GLfloat> vertexData();
+	static std::vector<GLushort> indices();
+	glm::mat4 getModelMatrix() { return modelMat; }
+	Sphere(glm::vec3 _color, glm::vec3 _location);
+};
 
 
 
 
-class Sphere
+class SphereSolid
 {
 protected:
 	std::vector<GLfloat> vertices;
@@ -22,7 +42,7 @@ public:
 	int dataSize;
 
 
-	Sphere(float radius, unsigned int rings, unsigned int sectors)
+	SphereSolid(float radius, unsigned int rings, unsigned int sectors)
 	{
 		float const R = 1. / (float)(rings - 1);
 		float const S = 1. / (float)(sectors - 1);
@@ -34,30 +54,33 @@ public:
 		std::vector<GLfloat>::iterator v = vertices.begin();
 		std::vector<GLfloat>::iterator n = normals.begin();
 		std::vector<GLfloat>::iterator t = texcoords.begin();
-		for (r = 0; r < rings; r++) for (s = 0; s < sectors; s++) {
-			float const y = sin(-M_PI_2 + M_PI * r * R);
-			float const x = cos(2 * M_PI * s * S) * sin(M_PI * r * R);
-			float const z = sin(2 * M_PI * s * S) * sin(M_PI * r * R);
+		for (r = 0; r < rings; r++) 
+			for (s = 0; s < sectors; s++) {
+				float const y = sin(-M_PI_2 + M_PI * r * R);
+				float const x = cos(2 * M_PI * s * S) * sin(M_PI * r * R);
+				float const z = sin(2 * M_PI * s * S) * sin(M_PI * r * R);
 
-			*t++ = s * S;
-			*t++ = r * R;
+				*t++ = s * S;
+				*t++ = r * R;
 
-			*v++ = x * radius;
-			*v++ = y * radius;
-			*v++ = z * radius;
+				*v++ = x * radius;
+				*v++ = y * radius;
+				*v++ = z * radius;
 
-			*n++ = x;
-			*n++ = y;
-			*n++ = z;
-		}
+				*n++ = x;
+				*n++ = y;
+				*n++ = z;
+			}
 
-		indices.resize(dataSize * 4);
+		indices.resize(dataSize * 6);
 		std::vector<GLushort>::iterator i = indices.begin();
 		for (r = 0; r < rings; r++) for (s = 0; s < sectors; s++) {
 			*i++ = r * sectors + s;
 			*i++ = r * sectors + (s + 1);
 			*i++ = (r + 1) * sectors + (s + 1);
+			*i++ = (r + 1) * sectors + (s + 1);
 			*i++ = (r + 1) * sectors + s;
+			*i++ = r * sectors + s;
 		}
 		vertexData.resize(dataSize * 6);
 		for (int i = 0; i < dataSize; i++)

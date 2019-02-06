@@ -123,7 +123,8 @@ int main() {
 	-0.5f,  0.5f, -0.5f,  0.0f, 1.0f
 	};
 	
-	Sphere sphere(1., 10, 10);
+	Sphere sphere(glm::vec3(1.0, 0.0, 0.0),
+		glm::vec3(0.,0.,0.));
 
 	glm::vec3 cubePositions[] = {
 		glm::vec3(0.0f,  0.0f,  0.0f),
@@ -147,10 +148,10 @@ int main() {
 	glBindVertexArray(VAO);
 
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sphere.dataSize * 6, sphere.vertexData.data(), GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sphere.vertexData().size() * sizeof(GLfloat), sphere.vertexData().data(), GL_STATIC_DRAW);
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sphere.indices.size() , sphere.indices.data(), GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sphere.indices().size() * sizeof(GLfloat), sphere.indices().data(), GL_STATIC_DRAW);
 
 
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
@@ -190,15 +191,16 @@ int main() {
 		ourShader.setMat4("projection", projection);
 
 		glBindVertexArray(VAO); 
-		for (unsigned int i = 0; i < 10; i++)
+		for (unsigned int i = 0; i < 1; i++)
 		{
 			glm::mat4 model = glm::mat4(1.0f);
 			model = glm::translate(model, cubePositions[i]);
 			//float angle = 20 * i;//(glfwGetTime() + 20.f) * (i + 5);
 			//model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, i/5, 0.5f));
-			ourShader.setMat4("model", model);
-
-			glDrawElements(GL_TRIANGLES, sphere.indices.size(), GL_UNSIGNED_SHORT, 0);
+			ourShader.setVec3("color", sphere.color);
+			ourShader.setMat4("model", sphere.getModelMatrix());
+			//glDrawArrays(GL_POINTS, 0, sphere.dataSize * 6);
+			glDrawElements(GL_TRIANGLES, sphere.indices().size(), GL_UNSIGNED_SHORT, 0);
 		}
 
 		glfwSwapBuffers(window);
