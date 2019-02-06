@@ -15,7 +15,6 @@ private:
 	static SphereSolid solid;
 
 public:
-
 	glm::vec3 color;
 	glm::vec3 location;
 
@@ -23,6 +22,11 @@ public:
 	static std::vector<GLushort> indices();
 	glm::mat4 getModelMatrix() { return modelMat; }
 	Sphere(glm::vec3 _color, glm::vec3 _location);
+	Sphere(float Colorx, float Colory, float Colorz,
+		float Locationx, float Locationy, float Locationz) : Sphere(
+			glm::vec3(Colorx, Colory, Colorz),
+			glm::vec3(Locationx, Locationy, Locationz)
+		) {}
 };
 
 

@@ -13,6 +13,8 @@
 #include "shader_s.h"
 #include "camera.h"
 #include "sphere.h"
+#include "cube.h"
+#include "board.h"
 
 
 
@@ -78,98 +80,62 @@ int main() {
 
 
 	glEnable(GL_DEPTH_TEST);
-
-	float vertices[] = {
-	-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-	 0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
-	 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-	 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-	-0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-	-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-
-	-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-	 0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-	 0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-	 0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-	-0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
-	-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-
-	-0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-	-0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-	-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-	-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-	-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-	-0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-
-	 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-	 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-	 0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-	 0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-	 0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-	 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-
-	-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-	 0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
-	 0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-	 0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-	-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-	-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-
-	-0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-	 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-	 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-	 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-	-0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
-	-0.5f,  0.5f, -0.5f,  0.0f, 1.0f
-	};
 	
-	Sphere sphere(glm::vec3(1.0, 0.0, 0.0),
-		glm::vec3(0.,0.,0.));
-
-	glm::vec3 cubePositions[] = {
-		glm::vec3(0.0f,  0.0f,  0.0f),
-		glm::vec3(2.0f,  5.0f, -15.0f),
-		glm::vec3(-1.5f, -2.2f, -2.5f),
-		glm::vec3(-3.8f, -2.0f, -12.3f),
-		glm::vec3(2.4f, -0.4f, -3.5f),
-		glm::vec3(-1.7f,  3.0f, -7.5f),
-		glm::vec3(1.3f, -2.0f, -2.5f),
-		glm::vec3(1.5f,  2.0f, -2.5f),
-		glm::vec3(1.5f,  0.2f, -1.5f),
-		glm::vec3(-1.3f,  1.0f, -1.5f)
+	Sphere spheres[] = {
+		Sphere(glm::vec3(1.0f, 1.0f, 1.0f),	glm::vec3(0.0f,  0.0f,  0.0f)),
+		Sphere(glm::vec3(1.0f, 1.0f, 0.0f),	glm::vec3(2.0f,  5.0f, -15.0f)),
+		Sphere(glm::vec3(1.0f, 0.0f, 0.0f),	glm::vec3(-1.5f, -2.2f, -2.5f)),
+		Sphere(glm::vec3(0.0f, 1.0f, 0.0f),	glm::vec3(-3.8f, -2.0f, -12.3f)),
+		Sphere(glm::vec3(0.2f, 0.0f, 1.0f),	glm::vec3(2.4f, -0.4f, -3.5f)),
+		Sphere(glm::vec3(0.0f, 0.4f, 0.5f),	glm::vec3(-1.7f,  3.0f, -7.5f)),
+		Sphere(glm::vec3(0.1f, 0.4f, 0.0f),	glm::vec3(1.3f, -2.0f, -2.5f)),
+		Sphere(glm::vec3(1.0f, 0.4f, 0.0f),	glm::vec3(1.5f,  2.0f, -2.5f)),
+		Sphere(glm::vec3(1.0f, 0.4f, 0.6f),	glm::vec3(1.5f,  0.2f, -1.5f)),
+		Sphere(glm::vec3(0.0f, 0.9f, 0.1f),	glm::vec3(-1.3f,  1.0f, -1.5f))
 	};
 
+	Board table(3, 3);
+	//Cube cubes = Cube(glm::vec3(-1.0, -1.0, -1.0), glm::vec3(1.0f, 1.0f, 2.0f), glm::vec3(1.0f, 0.4f, 0.6f));
+
 	
-	unsigned int VBO, VAO, EBO;
-	glGenVertexArrays(1, &VAO);
-	glGenBuffers(1, &VBO);
+	unsigned int ballVBO, cubeVBO , ballVAO, cubeVAO, EBO;
+	glGenVertexArrays(1, &ballVAO);
+	glGenVertexArrays(1, &cubeVAO);
+	glGenBuffers(1, &ballVBO);
+	glGenBuffers(1, &cubeVBO);
 	glGenBuffers(1, &EBO);
 
-	glBindVertexArray(VAO);
-
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sphere.vertexData().size() * sizeof(GLfloat), sphere.vertexData().data(), GL_STATIC_DRAW);
-
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sphere.indices().size() * sizeof(GLfloat), sphere.indices().data(), GL_STATIC_DRAW);
-
+	
+	glBindVertexArray(cubeVAO);
+	glBindBuffer(GL_ARRAY_BUFFER, cubeVBO);
+	glBufferData(GL_ARRAY_BUFFER, Cube::vertexData().size() * sizeof(GLfloat), Cube::vertexData().data(), GL_STATIC_DRAW);
 
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
 	glEnableVertexAttribArray(1);
 
-	//glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	glBindVertexArray(ballVAO);
+	glBindBuffer(GL_ARRAY_BUFFER, ballVBO);
+	glBufferData(GL_ARRAY_BUFFER, Sphere::vertexData().size() * sizeof(GLfloat), Sphere::vertexData().data(), GL_STATIC_DRAW);
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, Sphere::indices().size() * sizeof(GLfloat), Sphere::indices().data(), GL_STATIC_DRAW);
+	
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+	glEnableVertexAttribArray(1);
+
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 
-	Shader ourShader("shader.vert", "shader.frag");
+	Shader ballShader("ball.vert", "ball.frag");
 
-
-	ourShader.use();
-
+	ballShader.use();
 
 	glm::mat4 projection;
-	
 
 
 	while (!glfwWindowShouldClose(window)) {
@@ -180,35 +146,42 @@ int main() {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 
-		ourShader.use();
+		ballShader.use();
 		float currentFrame = glfwGetTime();
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
 		glm::mat4 view = camera.GetViewMatrix();
-		ourShader.setMat4("view", view);
+		ballShader.setMat4("view", view);
 
 		projection = glm::perspective(glm::radians(camera.Zoom), (float)screenWidth / screenHeight, 0.1f, 100.0f);
-		ourShader.setMat4("projection", projection);
+		ballShader.setMat4("projection", projection);
 
-		glBindVertexArray(VAO); 
-		for (unsigned int i = 0; i < 1; i++)
+		glBindVertexArray(ballVAO);
+
+		for (unsigned int i = 0; i < 10; i++)
 		{
-			glm::mat4 model = glm::mat4(1.0f);
-			model = glm::translate(model, cubePositions[i]);
-			//float angle = 20 * i;//(glfwGetTime() + 20.f) * (i + 5);
-			//model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, i/5, 0.5f));
-			ourShader.setVec3("color", sphere.color);
-			ourShader.setMat4("model", sphere.getModelMatrix());
+			ballShader.setVec3("color", spheres[i].color);
+			ballShader.setMat4("model", spheres[i].getModelMatrix());
 			//glDrawArrays(GL_POINTS, 0, sphere.dataSize * 6);
-			glDrawElements(GL_TRIANGLES, sphere.indices().size(), GL_UNSIGNED_SHORT, 0);
+			glDrawElements(GL_TRIANGLES, Sphere::indices().size(), GL_UNSIGNED_SHORT, 0);
+		}
+
+		glBindVertexArray(cubeVAO);
+		for (int i = 0; i < table.cubeCount; i++)
+		{
+			ballShader.setVec3("color", table[i].color);
+			ballShader.setMat4("model", table[i].getModelMatrix());
+			glDrawArrays(GL_TRIANGLES, 0, 36);
 		}
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}
 
-	glDeleteVertexArrays(1, &VAO);
-	glDeleteBuffers(1, &VBO);
+	glDeleteVertexArrays(1, &ballVAO);
+	glDeleteVertexArrays(1, &cubeVAO);
+	glDeleteBuffers(1, &ballVBO);
+	glDeleteBuffers(1, &cubeVBO);
 	glDeleteBuffers(1, &EBO);
 
 	//system("pause");
