@@ -2,7 +2,7 @@
 
 
 
-std::vector<GLfloat> Cube::vertices = {
+std::vector<float> Cube::vertices = {
 	0.0f, 0.0f, 0.0f,  0.0f, 0.0f, -1.0f,
 	1.0f, 0.0f, 0.0f,  0.0f, 0.0f, -1.0f,
 	1.0f, 1.0f, 0.0f,  0.0f, 0.0f, -1.0f,

@@ -32,6 +32,9 @@ FollowCamera followCamera(glm::vec3(0.f, 0.f, 0.f));
 Camera *camera = &followCamera;
 Camera *cameras[] = { &freeCamera, &constCamera, &toBallCamera, &followCamera };
 
+Shader *phongShaderPtr;
+Shader *mainShader;
+
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void renderBall(Shader &ballShader, Sphere &ball);
@@ -117,9 +120,9 @@ int main() {
 
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 	}
-
-
 	Shader phongShader("phong.vert", "phong.frag");
+	mainShader = &phongShader;
+
 
 	phongShader.use();
 	//phongShader.setVec3("lightPos", glm::vec3(4.0f, -3.0f, 4.0f));
@@ -137,50 +140,50 @@ int main() {
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
 
-		phongShader.use();
+		mainShader->use();
 
 		glm::mat4 view = camera->GetViewMatrix();
-		phongShader.setMat4("view", view);
+		mainShader->setMat4("view", view);
 
 		projection = glm::perspective(glm::radians(camera->getZoom()), (float)screenWidth / screenHeight, 0.1f, 100.0f);
-		phongShader.setMat4("projection", projection);
-		phongShader.setVec3("viewPos", camera->getPosition());
-		phongShader.setFloat("shininess", 64);
+		mainShader->setMat4("projection", projection);
+		mainShader->setVec3("viewPos", camera->getPosition());
+		mainShader->setFloat("shininess", 64);
 
-		phongShader.setVec3("dirLight.direction", -0.2f, -1.0f, -0.3f);
-		phongShader.setVec3("dirLight.ambient", 0.05f, 0.05f, 0.05f);
-		phongShader.setVec3("dirLight.diffuse", 0.4f, 0.4f, 0.4f);
-		phongShader.setVec3("dirLight.specular", 0.5f, 0.5f, 0.5f);
+		mainShader->setVec3("dirLight.direction", -0.2f, -1.0f, -0.3f);
+		mainShader->setVec3("dirLight.ambient", 0.05f, 0.05f, 0.05f);
+		mainShader->setVec3("dirLight.diffuse", 0.4f, 0.4f, 0.4f);
+		mainShader->setVec3("dirLight.specular", 0.5f, 0.5f, 0.5f);
 		
 		
-		phongShader.setVec3("pointLights.position", 4.0f, -3.0f, 4.0f);
-		phongShader.setVec3("pointLights.ambient", 0.05f, 0.05f, 0.05f);
-		phongShader.setVec3("pointLights.diffuse", 0.8f, 0.8f, 0.8f);
-		phongShader.setVec3("pointLights.specular", 1.0f, 1.0f, 1.0f);
-		phongShader.setFloat("pointLights.constant", 1.0f);
-		phongShader.setFloat("pointLights.linear", 0.09);
-		phongShader.setFloat("pointLights.quadratic", 0.032);
+		mainShader->setVec3("pointLights.position", 4.0f, -3.0f, 4.0f);
+		mainShader->setVec3("pointLights.ambient", 0.05f, 0.05f, 0.05f);
+		mainShader->setVec3("pointLights.diffuse", 0.8f, 0.8f, 0.8f);
+		mainShader->setVec3("pointLights.specular", 1.0f, 1.0f, 1.0f);
+		mainShader->setFloat("pointLights.constant", 1.0f);
+		mainShader->setFloat("pointLights.linear", 0.09);
+		mainShader->setFloat("pointLights.quadratic", 0.032);
 		
 		
-		phongShader.setVec3("spotLight.position", freeCamera.getPosition());
-		phongShader.setVec3("spotLight.direction", freeCamera.Front);
-		phongShader.setVec3("spotLight.ambient", 0.0f, 0.0f, 0.0f);
-		phongShader.setVec3("spotLight.diffuse", 1.0f, 1.0f, 1.0f);
-		phongShader.setVec3("spotLight.specular", 1.0f, 1.0f, 1.0f);
-		phongShader.setFloat("spotLight.constant", 1.0f);
-		phongShader.setFloat("spotLight.linear", 0.09);
-		phongShader.setFloat("spotLight.quadratic", 0.032);
-		phongShader.setFloat("spotLight.cutOff", glm::cos(glm::radians(12.5f)));
-		phongShader.setFloat("spotLight.outerCutOff", glm::cos(glm::radians(15.0f)));
+		mainShader->setVec3("spotLight.position", freeCamera.getPosition());
+		mainShader->setVec3("spotLight.direction", freeCamera.Front);
+		mainShader->setVec3("spotLight.ambient", 0.0f, 0.0f, 0.0f);
+		mainShader->setVec3("spotLight.diffuse", 1.0f, 1.0f, 1.0f);
+		mainShader->setVec3("spotLight.specular", 1.0f, 1.0f, 1.0f);
+		mainShader->setFloat("spotLight.constant", 1.0f);
+		mainShader->setFloat("spotLight.linear", 0.09);
+		mainShader->setFloat("spotLight.quadratic", 0.032);
+		mainShader->setFloat("spotLight.cutOff", glm::cos(glm::radians(12.5f)));
+		mainShader->setFloat("spotLight.outerCutOff", glm::cos(glm::radians(15.0f)));
 
 		glBindVertexArray(ballVAO);
 		for (unsigned int i = 0; i < 9; i++)
-			renderBall(phongShader, spheres[i]);
-		renderBall(phongShader, whiteBall);
+			renderBall(*mainShader, spheres[i]);
+		renderBall(*mainShader, whiteBall);
 
 		glBindVertexArray(cubeVAO);
 		for (int i = 0; i < table.cubeCount; i++)
-			renderCube(phongShader, table[i]);
+			renderCube(*mainShader, table[i]);
 		
 
 		glfwSwapBuffers(window);

@@ -44,6 +44,12 @@
     <None Include="phong.frag">
       <Filter>shaders</Filter>
     </None>
+    <None Include="gourand.frag">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="gourand.vert">
+      <Filter>shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="shader_s.h">

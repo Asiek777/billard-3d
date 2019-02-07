@@ -10,7 +10,7 @@ class Cube
 {
 private:
 	glm::mat4 modelMat;
-	static std::vector<GLfloat> vertices;
+	static std::vector<float> vertices;
 	
 public:
 	glm::vec3 color;

@@ -147,6 +147,8 @@
     <ClCompile Include="sphere.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="gourand.frag" />
+    <None Include="gourand.vert" />
     <None Include="phong.frag" />
     <None Include="phong.vert" />
   </ItemGroup>
