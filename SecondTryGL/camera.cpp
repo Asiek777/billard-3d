@@ -50,7 +50,7 @@ float ToBallCamera::getZoom()
 
 glm::mat4 ToBallCamera::GetViewMatrix()
 {
-	return glm::lookAt(Position, BallPosition, glm::vec3(0.0f, 1.0f, 0.0f));
+	return glm::lookAt(Position, BallPosition, glm::vec3(0.0f, 0.0f, 1.0f));
 }
 
 void ToBallCamera::ProcessMouseScroll(float yoffset)
@@ -71,14 +71,27 @@ glm::vec3 ToBallCamera::getPosition()
 void FollowCamera::updateBallPosition(glm::vec3 ballPosition)
 {
 	BallPosition = ballPosition;
-	Position = ballPosition + glm::vec3(3.0f, 3.0f, 3.0f);
+	Position = ballPosition - Direction * 10.0f + glm::vec3(0.0f, 0.0f, 5.0f);
+}
+
+void FollowCamera::updateDirection(float deltaTime)
+{
+	Yaw += deltaTime;
+	Direction = glm::vec3(sin(Yaw), cos(Yaw), 0.0);
+	Position = BallPosition - Direction * 10.0f + glm::vec3(0.0f, 0.0f, 5.0f);
+}
+
+glm::vec3 FollowCamera::getDirection()
+{
+	return Direction;
 }
 
 FollowCamera::FollowCamera(glm::vec3 ballPosition)
 {
 	Zoom = ZOOM;
-	BallPosition = ballPosition;
-	Position = ballPosition + glm::vec3(3.0f, 3.0f, 3.0f);
+	Yaw = 0;
+	Direction = glm::vec3(sin(Yaw), cos(Yaw), 0.0);
+	updateBallPosition(ballPosition);
 }
 
 float FollowCamera::getZoom()

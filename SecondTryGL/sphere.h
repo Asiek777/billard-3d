@@ -28,7 +28,7 @@ public:
 			glm::vec3(Colorx, Colory, Colorz),
 			glm::vec3(Locationx, Locationy, Locationz)
 		) {}
-	void moveUp();
+	void move(glm::vec3 direction, float deltaTime);
 };
 
 

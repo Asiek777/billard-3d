@@ -21,19 +21,21 @@
 int screenWidth = 800, screenHeight = 600;
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
+float lastX = screenWidth / 2.f, lastY = screenHeight / 2.f;
+bool firstMouse = true;
+Sphere whiteBall(glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
+
 FreeCamera freeCamera(glm::vec3(0.f, 0.f, 55.f));
 ConstCamera constCamera = ConstCamera();
 ToBallCamera toBallCamera(glm::vec3(0.f, 0.f, 0.f));
 FollowCamera followCamera(glm::vec3(0.f, 0.f, 0.f));
 Camera *camera = &followCamera;
 Camera *cameras[] = { &freeCamera, &constCamera, &toBallCamera, &followCamera };
-float lastX = screenWidth / 2.f, lastY = screenHeight / 2.f;
-bool firstMouse = true;
-Sphere whiteBall(glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
-
 
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
+void renderBall(Shader &ballShader, Sphere &ball);
+void renderCube(Shader & shader, Cube& cube);
 void processInput(GLFWwindow *window);
 void changeCamera();
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
@@ -146,22 +148,13 @@ int main() {
 
 		glBindVertexArray(ballVAO);
 		for (unsigned int i = 0; i < 9; i++)
-		{
-			ballShader.setVec3("ballColor", spheres[i].color);
-			ballShader.setMat4("model", spheres[i].getModelMatrix());
-			glDrawElements(GL_TRIANGLES, Sphere::indices().size(), GL_UNSIGNED_SHORT, 0);
-		}
-		ballShader.setVec3("ballColor", whiteBall.color);
-		ballShader.setMat4("model", whiteBall.getModelMatrix());
-		glDrawElements(GL_TRIANGLES, Sphere::indices().size(), GL_UNSIGNED_SHORT, 0);
+			renderBall(ballShader, spheres[i]);
+		renderBall(ballShader, whiteBall);
 
 		glBindVertexArray(cubeVAO);
 		for (int i = 0; i < table.cubeCount; i++)
-		{
-			ballShader.setVec3("ballColor", table[i].color);
-			ballShader.setMat4("model", table[i].getModelMatrix());
-			glDrawArrays(GL_TRIANGLES, 0, 36);
-		}
+			renderCube(ballShader, table[i]);
+		
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
@@ -176,6 +169,20 @@ int main() {
 	//system("pause");
 	glfwTerminate();
 	return 0;
+}
+
+void renderCube(Shader & shader, Cube& cube)
+{
+	shader.setVec3("ballColor", cube.color);
+	shader.setMat4("model", cube.getModelMatrix());
+	glDrawArrays(GL_TRIANGLES, 0, 36);
+}
+
+void renderBall(Shader &shader, Sphere &ball)
+{
+	shader.setVec3("ballColor", ball.color);
+	shader.setMat4("model", ball.getModelMatrix());
+	glDrawElements(GL_TRIANGLES, Sphere::indices().size(), GL_UNSIGNED_SHORT, 0);
 }
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
@@ -218,10 +225,23 @@ void processInput(GLFWwindow *window) {
 		freeCamera.ProcessKeyboard(RIGHT, deltaTime);
 	if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
 	{
-		whiteBall.moveUp();
+		whiteBall.move(followCamera.getDirection(), deltaTime);
 		toBallCamera.updateBallPosition(whiteBall.location);
 		followCamera.updateBallPosition(whiteBall.location);
+
 	}
+	if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
+	{
+		whiteBall.move(followCamera.getDirection(), -deltaTime);
+		toBallCamera.updateBallPosition(whiteBall.location);
+		followCamera.updateBallPosition(whiteBall.location);
+
+	}
+	if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)	
+		followCamera.updateDirection(-deltaTime);
+	if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
+		followCamera.updateDirection(deltaTime);
+
 	if (glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS)
 		changeCamera();
 	if (glfwGetKey(window, GLFW_KEY_0) == GLFW_PRESS)

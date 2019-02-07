@@ -58,10 +58,14 @@ public:
 class FollowCamera : public Camera {
 private:
 	float Zoom;
+	float Yaw;
 	glm::vec3 Position;
 	glm::vec3 BallPosition;
+	glm::vec3 Direction;
 public:
 	void updateBallPosition(glm::vec3 ballPosition);
+	void updateDirection(float deltaTime);
+	glm::vec3 getDirection();
 
 	FollowCamera(glm::vec3 ballPosition);
 	virtual float getZoom() override;

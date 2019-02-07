@@ -8,7 +8,8 @@ private:
 
 public:
 	int cubeCount;
-	Cube operator[](int i) { return cubes[i]; }
+	Cube operator[](int i) const { return cubes[i]; }
+	Cube& operator[](int i) { return cubes[i]; }
 
 	Board(int width, int height);
 	~Board();

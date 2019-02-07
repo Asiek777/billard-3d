@@ -25,7 +25,7 @@ void Sphere::updateModelMat()
 	modelMat = glm::translate(glm::mat4(1.0), location);
 }
 
-void Sphere::moveUp() {
-	location.y+=0.01;
+void Sphere::move(glm::vec3 direction, float deltaTime) {
+	location += deltaTime * direction * 3.0f;
 	updateModelMat();
 }
