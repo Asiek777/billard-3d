@@ -66,8 +66,7 @@ int main() {
 		std::cout << "Failed to initialize GLAD" << std::endl;
 		return -1;
 	}
-
-
+	
 	glEnable(GL_DEPTH_TEST);
 	
 	Sphere spheres[] = {
@@ -83,46 +82,47 @@ int main() {
 	};
 
 	Board table(30, 20);
-	//Cube cubes = Cube(glm::vec3(-1.0, -1.0, -1.0), glm::vec3(1.0f, 1.0f, 2.0f), glm::vec3(1.0f, 0.4f, 0.6f));
 
 	
 	unsigned int ballVBO, cubeVBO , ballVAO, cubeVAO, EBO;
-	glGenVertexArrays(1, &ballVAO);
-	glGenVertexArrays(1, &cubeVAO);
-	glGenBuffers(1, &ballVBO);
-	glGenBuffers(1, &cubeVBO);
-	glGenBuffers(1, &EBO);
-
-	
-	glBindVertexArray(cubeVAO);
-	glBindBuffer(GL_ARRAY_BUFFER, cubeVBO);
-	glBufferData(GL_ARRAY_BUFFER, Cube::vertexData().size() * sizeof(GLfloat), Cube::vertexData().data(), GL_STATIC_DRAW);
-
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
-	glEnableVertexAttribArray(1);
+	{
+		glGenVertexArrays(1, &ballVAO);
+		glGenVertexArrays(1, &cubeVAO);
+		glGenBuffers(1, &ballVBO);
+		glGenBuffers(1, &cubeVBO);
+		glGenBuffers(1, &EBO);
 
 
-	glBindVertexArray(ballVAO);
-	glBindBuffer(GL_ARRAY_BUFFER, ballVBO);
-	glBufferData(GL_ARRAY_BUFFER, Sphere::vertexData().size() * sizeof(GLfloat), Sphere::vertexData().data(), GL_STATIC_DRAW);
+		glBindVertexArray(cubeVAO);
+		glBindBuffer(GL_ARRAY_BUFFER, cubeVBO);
+		glBufferData(GL_ARRAY_BUFFER, Cube::vertexData().size() * sizeof(GLfloat), Cube::vertexData().data(), GL_STATIC_DRAW);
 
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, Sphere::indices().size() * sizeof(GLfloat), Sphere::indices().data(), GL_STATIC_DRAW);
-	
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
-	glEnableVertexAttribArray(1);
-
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+		glEnableVertexAttribArray(1);
 
 
-	Shader ballShader("ball.vert", "ball.frag");
+		glBindVertexArray(ballVAO);
+		glBindBuffer(GL_ARRAY_BUFFER, ballVBO);
+		glBufferData(GL_ARRAY_BUFFER, Sphere::vertexData().size() * sizeof(GLfloat), Sphere::vertexData().data(), GL_STATIC_DRAW);
 
-	ballShader.use();
-	ballShader.setVec3("lightPos", glm::vec3(4.0f, -3.0f, 4.0f));
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, Sphere::indices().size() * sizeof(GLfloat), Sphere::indices().data(), GL_STATIC_DRAW);
+
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+		glEnableVertexAttribArray(1);
+
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+	}
+
+
+	Shader phongShader("phong.vert", "phong.frag");
+
+	phongShader.use();
+	//phongShader.setVec3("lightPos", glm::vec3(4.0f, -3.0f, 4.0f));
 	glm::mat4 projection;
 
 
@@ -137,23 +137,50 @@ int main() {
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
 
-		ballShader.use();
+		phongShader.use();
 
 		glm::mat4 view = camera->GetViewMatrix();
-		ballShader.setMat4("view", view);
+		phongShader.setMat4("view", view);
 
 		projection = glm::perspective(glm::radians(camera->getZoom()), (float)screenWidth / screenHeight, 0.1f, 100.0f);
-		ballShader.setMat4("projection", projection);
-		ballShader.setVec3("viewPos", camera->getPosition());
+		phongShader.setMat4("projection", projection);
+		phongShader.setVec3("viewPos", camera->getPosition());
+		phongShader.setFloat("shininess", 64);
+
+		phongShader.setVec3("dirLight.direction", -0.2f, -1.0f, -0.3f);
+		phongShader.setVec3("dirLight.ambient", 0.05f, 0.05f, 0.05f);
+		phongShader.setVec3("dirLight.diffuse", 0.4f, 0.4f, 0.4f);
+		phongShader.setVec3("dirLight.specular", 0.5f, 0.5f, 0.5f);
+		
+		
+		phongShader.setVec3("pointLights.position", 4.0f, -3.0f, 4.0f);
+		phongShader.setVec3("pointLights.ambient", 0.05f, 0.05f, 0.05f);
+		phongShader.setVec3("pointLights.diffuse", 0.8f, 0.8f, 0.8f);
+		phongShader.setVec3("pointLights.specular", 1.0f, 1.0f, 1.0f);
+		phongShader.setFloat("pointLights.constant", 1.0f);
+		phongShader.setFloat("pointLights.linear", 0.09);
+		phongShader.setFloat("pointLights.quadratic", 0.032);
+		
+		
+		phongShader.setVec3("spotLight.position", freeCamera.getPosition());
+		phongShader.setVec3("spotLight.direction", freeCamera.Front);
+		phongShader.setVec3("spotLight.ambient", 0.0f, 0.0f, 0.0f);
+		phongShader.setVec3("spotLight.diffuse", 1.0f, 1.0f, 1.0f);
+		phongShader.setVec3("spotLight.specular", 1.0f, 1.0f, 1.0f);
+		phongShader.setFloat("spotLight.constant", 1.0f);
+		phongShader.setFloat("spotLight.linear", 0.09);
+		phongShader.setFloat("spotLight.quadratic", 0.032);
+		phongShader.setFloat("spotLight.cutOff", glm::cos(glm::radians(12.5f)));
+		phongShader.setFloat("spotLight.outerCutOff", glm::cos(glm::radians(15.0f)));
 
 		glBindVertexArray(ballVAO);
 		for (unsigned int i = 0; i < 9; i++)
-			renderBall(ballShader, spheres[i]);
-		renderBall(ballShader, whiteBall);
+			renderBall(phongShader, spheres[i]);
+		renderBall(phongShader, whiteBall);
 
 		glBindVertexArray(cubeVAO);
 		for (int i = 0; i < table.cubeCount; i++)
-			renderCube(ballShader, table[i]);
+			renderCube(phongShader, table[i]);
 		
 
 		glfwSwapBuffers(window);
@@ -173,14 +200,14 @@ int main() {
 
 void renderCube(Shader & shader, Cube& cube)
 {
-	shader.setVec3("ballColor", cube.color);
+	shader.setVec3("objectColor", cube.color);
 	shader.setMat4("model", cube.getModelMatrix());
 	glDrawArrays(GL_TRIANGLES, 0, 36);
 }
 
 void renderBall(Shader &shader, Sphere &ball)
 {
-	shader.setVec3("ballColor", ball.color);
+	shader.setVec3("objectColor", ball.color);
 	shader.setMat4("model", ball.getModelMatrix());
 	glDrawElements(GL_TRIANGLES, Sphere::indices().size(), GL_UNSIGNED_SHORT, 0);
 }

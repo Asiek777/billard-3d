@@ -147,8 +147,8 @@
     <ClCompile Include="sphere.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="ball.frag" />
-    <None Include="ball.vert" />
+    <None Include="phong.frag" />
+    <None Include="phong.vert" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="board.h" />
