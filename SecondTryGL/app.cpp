@@ -62,6 +62,8 @@ int App::run() {
 	phongShaderPtr = &phongShader;
 	mainShader = &phongShader;
 	mainShader->use();
+	Shader lightShader("light.vert", "light.frag");
+	lightShaderPtr = &lightShader;
 
 	while (!glfwWindowShouldClose(window)) {
 
@@ -73,20 +75,25 @@ int App::run() {
 		float currentFrame = glfwGetTime();
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
+		sun.move(deltaTime);
 
 		mainShader->use();
 
 		setUniforms();
 
-		glBindVertexArray(ballVAO);
+		//glBindVertexArray(ballVAO);
 		for (unsigned int i = 0; i < 9; i++)
-			renderBall(*mainShader, spheres[i]);
-		renderBall(*mainShader, whiteBall);
+			renderBall(*mainShader, spheres[i], ballVAO);
+		renderBall(*mainShader, whiteBall, ballVAO);
+		
 
-		glBindVertexArray(cubeVAO);
 		for (int i = 0; i < table.cubeCount; i++)
-			renderCube(*mainShader, table[i]);
+			renderCube(*mainShader, table[i], cubeVAO);
 
+		lightShader.use();
+		renderBall(lightShader, lightBall, ballVAO);
+		renderBall(lightShader, sun, ballVAO);
+		
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
@@ -139,27 +146,30 @@ void App::SetupBuffers(unsigned int &ballVAO, unsigned int &cubeVAO, unsigned in
 
 void App::setUniforms()
 {
+	lightShaderPtr->use();
 	glm::mat4 view = camera->GetViewMatrix();
+	lightShaderPtr->setMat4("view", view);
+	glm::mat4 projection = glm::perspective(glm::radians(camera->getZoom()), (float)screenWidth / screenHeight, 0.1f, 200.0f);
+	lightShaderPtr->setMat4("projection", projection);
+
+	mainShader->use();
 	mainShader->setMat4("view", view);
-	glm::mat4 projection = glm::perspective(glm::radians(camera->getZoom()), (float)screenWidth / screenHeight, 0.1f, 100.0f);
 	mainShader->setMat4("projection", projection);
 	mainShader->setVec3("viewPos", camera->getPosition());
 	mainShader->setFloat("shininess", 64);
 
-	mainShader->setVec3("dirLight.direction", -0.2f, -1.0f, -0.3f);
-	mainShader->setVec3("dirLight.ambient", 0.05f, 0.05f, 0.05f);
-	mainShader->setVec3("dirLight.diffuse", 0.4f, 0.4f, 0.4f);
-	mainShader->setVec3("dirLight.specular", 0.5f, 0.5f, 0.5f);
+	mainShader->setVec3("dirLight.direction", sun.getDirection());
+	mainShader->setVec3("dirLight.ambient", sun.getAmbient());
+	mainShader->setVec3("dirLight.diffuse", sun.getDiffuse());
+	mainShader->setVec3("dirLight.specular", sun.getSpecular());
 
-
-	mainShader->setVec3("pointLights.position", 4.0f, -3.0f, 4.0f);
-	mainShader->setVec3("pointLights.ambient", 0.05f, 0.05f, 0.05f);
-	mainShader->setVec3("pointLights.diffuse", 0.8f, 0.8f, 0.8f);
-	mainShader->setVec3("pointLights.specular", 1.0f, 1.0f, 1.0f);
-	mainShader->setFloat("pointLights.constant", 1.0f);
-	mainShader->setFloat("pointLights.linear", 0.09);
-	mainShader->setFloat("pointLights.quadratic", 0.032);
-
+	mainShader->setVec3("pointLights.position", lightBall.location);
+	mainShader->setVec3("pointLights.ambient", lightBall.ambient);
+	mainShader->setVec3("pointLights.diffuse", lightBall.diffuse);
+	mainShader->setVec3("pointLights.specular", lightBall.specular);
+	mainShader->setFloat("pointLights.constant", lightBall.constant);
+	mainShader->setFloat("pointLights.linear", lightBall.linear);
+	mainShader->setFloat("pointLights.quadratic", lightBall.quadratic);
 
 	mainShader->setVec3("spotLight.position", freeCamera.getPosition());
 	mainShader->setVec3("spotLight.direction", freeCamera.Front);
@@ -178,15 +188,18 @@ App * App::getInstance()
 	return instance;
 }
 
-void App::renderCube(Shader & shader, Cube& cube)
+void App::renderCube(Shader & shader, Cube& cube, unsigned int & vertexArray)
 {
+
+	glBindVertexArray(vertexArray);
 	shader.setVec3("objectColor", cube.color);
 	shader.setMat4("model", cube.getModelMatrix());
 	glDrawArrays(GL_TRIANGLES, 0, 36);
 }
 
-void App::renderBall(Shader &shader, Sphere &ball)
+void App::renderBall(Shader &shader, Sphere &ball, unsigned int & vertexArray)
 {
+	glBindVertexArray(vertexArray);
 	shader.setVec3("objectColor", ball.color);
 	shader.setMat4("model", ball.getModelMatrix());
 	glDrawElements(GL_TRIANGLES, Sphere::indices().size(), GL_UNSIGNED_SHORT, 0);

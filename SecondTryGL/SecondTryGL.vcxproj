@@ -147,6 +147,7 @@
     <ClCompile Include="pointLight.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="sphere.cpp" />
+    <ClCompile Include="sun.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="gourand.frag" />
@@ -165,6 +166,7 @@
     <ClInclude Include="shader_s.h" />
     <ClInclude Include="sphere.h" />
     <ClInclude Include="stb_image.h" />
+    <ClInclude Include="sun.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="..\..\..\..\Desktop\test_instalki\textures\texture.jpg" />

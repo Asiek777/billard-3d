@@ -10,7 +10,7 @@
 class SphereSolid;
 
 class Sphere {
-private:
+protected:
 	glm::mat4 modelMat;
 	static SphereSolid solid;
 	void updateModelMat();
@@ -18,16 +18,20 @@ private:
 public:
 	glm::vec3 color;
 	glm::vec3 location;
+	float radius;
 
 	static std::vector<GLfloat> vertexData();
 	static std::vector<GLushort> indices();
 	glm::mat4 getModelMatrix() { return modelMat; }
-	Sphere(glm::vec3 _color, glm::vec3 _location);
+	Sphere(glm::vec3 _color, glm::vec3 _location, float _radius = 1);
+
 	Sphere(float Colorx, float Colory, float Colorz,
-		float Locationx, float Locationy, float Locationz) : Sphere(
+		float Locationx, float Locationy, float Locationz, 
+		float _radius =1) : Sphere(
 			glm::vec3(Colorx, Colory, Colorz),
-			glm::vec3(Locationx, Locationy, Locationz)
+			glm::vec3(Locationx, Locationy, Locationz), _radius
 		) {}
+
 	void move(glm::vec3 direction, float deltaTime);
 };
 

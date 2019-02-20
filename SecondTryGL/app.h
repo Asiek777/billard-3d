@@ -13,9 +13,11 @@
 
 #include "shader_s.h"
 #include "camera.h"
-#include "sphere.h"
+//#include "sphere.h"
 #include "cube.h"
 #include "board.h"
+//#include "pointLight.h"
+#include "sun.h"
 
 void framebuffer_size_callbackGlobal(GLFWwindow* window, int width, int height);
 void mouse_callbackGlobal(GLFWwindow* window, double xpos, double ypos);
@@ -31,6 +33,9 @@ class App {
 
 	Board table = Board(30, 20);
 	Sphere whiteBall = Sphere(glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(0.1f, 0.1f, 0.0f));
+	PointLight lightBall = PointLight(glm::vec3(15., 10., 4), 1., 0.09, 0.032,
+		glm::vec3(0.25), glm::vec3(0.6), glm::vec3(1.));
+	Sun sun = Sun(glm::vec3(0.05f), glm::vec3(0.4f), glm::vec3(0.5f));
 
 	FreeCamera freeCamera = FreeCamera(glm::vec3(0.f, 0.f, 55.f));
 	ConstCamera constCamera = ConstCamera();
@@ -41,12 +46,13 @@ class App {
 
 	Shader* phongShaderPtr;
 	Shader* mainShader;
+	Shader* lightShaderPtr;
 
 	static App* instance;
 
 
-	void renderBall(Shader &, Sphere &);
-	void renderCube(Shader &, Cube&);
+	void renderBall(Shader &, Sphere &, unsigned int & vertexArray);
+	void renderCube(Shader &, Cube&, unsigned int & vertexArray);
 	void processInput(GLFWwindow *window);
 	void changeCamera();
 	void SetupBuffers(unsigned int &ballVAO, unsigned int &cubeVAO, unsigned int &ballVBO, unsigned int &cubeVBO, unsigned int &EBO);
