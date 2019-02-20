@@ -36,6 +36,12 @@
     <ClCompile Include="camera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="app.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="pointLight.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="phong.vert">
@@ -48,6 +54,12 @@
       <Filter>shaders</Filter>
     </None>
     <None Include="gourand.vert">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="light.frag">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="light.vert">
       <Filter>shaders</Filter>
     </None>
   </ItemGroup>
@@ -68,6 +80,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="board.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="app.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="pointLight.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -139,23 +139,29 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="app.cpp" />
     <ClCompile Include="board.cpp" />
     <ClCompile Include="camera.cpp" />
     <ClCompile Include="cube.cpp" />
     <ClCompile Include="glad.c" />
+    <ClCompile Include="pointLight.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="sphere.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="gourand.frag" />
     <None Include="gourand.vert" />
+    <None Include="light.frag" />
+    <None Include="light.vert" />
     <None Include="phong.frag" />
     <None Include="phong.vert" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="app.h" />
     <ClInclude Include="board.h" />
     <ClInclude Include="camera.h" />
     <ClInclude Include="cube.h" />
+    <ClInclude Include="pointLight.h" />
     <ClInclude Include="shader_s.h" />
     <ClInclude Include="sphere.h" />
     <ClInclude Include="stb_image.h" />
