@@ -45,6 +45,7 @@ class App {
 	Camera **cameras;
 
 	Shader* phongShaderPtr;
+	Shader* gourandShaderPtr;
 	Shader* mainShader;
 	Shader* lightShaderPtr;
 

@@ -60,8 +60,11 @@ int App::run() {
 
 	Shader phongShader("phong.vert", "phong.frag");
 	phongShaderPtr = &phongShader;
-	mainShader = &phongShader;
+	Shader gourandShader("gourand.vert", "gourand.frag");
+	gourandShaderPtr = &gourandShader;
+	mainShader = &gourandShader;
 	mainShader->use();
+
 	Shader lightShader("light.vert", "light.frag");
 	lightShaderPtr = &lightShader;
 
@@ -272,6 +275,10 @@ void App::processInput(GLFWwindow *window) {
 		camera = cameras[2];
 	if (glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS)
 		camera = cameras[3];
+	if (glfwGetKey(window, GLFW_KEY_G) == GLFW_PRESS)
+		mainShader = gourandShaderPtr;
+	if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS)
+		mainShader = phongShaderPtr;
 }
 
 void App::changeCamera() {
