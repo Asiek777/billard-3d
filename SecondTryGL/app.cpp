@@ -71,8 +71,8 @@ int App::run() {
 	while (!glfwWindowShouldClose(window)) {
 
 		processInput(window);
-
-		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+		glm::vec4 skyColor = sun.getSkyColor();
+		glClearColor(skyColor.r, skyColor.g, skyColor.b, skyColor.a);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		float currentFrame = glfwGetTime();

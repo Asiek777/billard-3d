@@ -17,6 +17,11 @@ glm::vec3 Sun::getSpecular()
 	return specular * lightStrength;
 }
 
+glm::vec4 Sun::getSkyColor()
+{
+	return glm::vec4(lightStrength*glm::vec3(0.3, 0.8, 1.), 1.0);
+}
+
 Sun::Sun(glm::vec3 _ambient, glm::vec3 _diffuse,
 	glm::vec3 _specular) : Sphere(glm::vec3(1.), location, 8)
 {

@@ -4,7 +4,7 @@
 class Board
 {
 private:
-	Cube *cubes;
+	std::vector<Cube> cubes;
 
 public:
 	int cubeCount;

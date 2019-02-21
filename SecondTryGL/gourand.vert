@@ -55,16 +55,16 @@ vec3 CalcSpotLight(SpotLight light, vec3 normal, vec3 fragPos, vec3 viewDir);
 
 void main()
 {	 
-	gl_Position = projection * view * model * vec4(aPos, 1.0);   
+    vec3 vertPos = vec3(model * vec4(aPos, 1.0));
+	gl_Position = projection * view * vec4(vertPos, 1.0);
  
     vec3 norm = normalize(aNormal);
-    vec3 viewDir = normalize(viewPos - aPos);
-    
+    vec3 viewDir = normalize(viewPos - vertPos);
 
     vec3 result = CalcDirLight(dirLight, norm, viewDir); 
-    result += CalcPointLight(pointLights, norm, aPos, viewDir);    
+    result += CalcPointLight(pointLights, norm, vertPos, viewDir);    
 
-    result += CalcSpotLight(spotLight, norm, aPos, viewDir);    
+    result += CalcSpotLight(spotLight, norm, vertPos, viewDir);    
     
     Color = result;
 }
