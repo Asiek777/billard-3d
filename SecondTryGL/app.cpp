@@ -45,14 +45,14 @@ int App::run() {
 
 	Sphere spheres[] = {
 		Sphere(glm::vec3(1.0f, 1.0f, 0.0f),	glm::vec3(2.0f,  5.0f, 0.0f)),
-		Sphere(glm::vec3(1.0f, 0.0f, 0.0f),	glm::vec3(-1.5f, -2.2f, 0.0f)),
-		Sphere(glm::vec3(0.0f, 1.0f, 0.0f),	glm::vec3(-3.8f, -2.0f, 0.0f)),
-		Sphere(glm::vec3(0.2f, 0.0f, 1.0f),	glm::vec3(3.4f, -5.4f, 0.0f)),
+		Sphere(glm::vec3(1.0f, 0.0f, 0.0f),	glm::vec3(-3.5f, -9.2f, 0.0f)),
+		Sphere(glm::vec3(0.0f, 1.0f, 0.0f),	glm::vec3(-13.8f, -2.0f, 0.0f)),
+		Sphere(glm::vec3(0.2f, 0.0f, 1.0f),	glm::vec3(4.4f, -5.4f, 0.0f)),
 		Sphere(glm::vec3(0.0f, 0.4f, 0.5f),	glm::vec3(-1.7f,  3.0f, 0.0f)),
-		Sphere(glm::vec3(0.1f, 0.4f, 0.0f),	glm::vec3(1.3f, -2.0f, 0.0f)),
-		Sphere(glm::vec3(1.0f, 0.4f, 0.0f),	glm::vec3(1.5f,  2.0f, 0.0f)),
-		Sphere(glm::vec3(1.0f, 0.4f, 0.6f),	glm::vec3(1.5f,  0.2f, 0.0f)),
-		Sphere(glm::vec3(0.0f, 0.9f, 0.1f),	glm::vec3(-1.3f,  1.0f, 0.0f))
+		Sphere(glm::vec3(0.1f, 0.4f, 0.0f),	glm::vec3(8.3f, -2.0f, 0.0f)),
+		Sphere(glm::vec3(1.0f, 0.4f, 0.0f),	glm::vec3(10.5f,  2.0f, 0.0f)),
+		Sphere(glm::vec3(1.0f, 0.4f, 0.6f),	glm::vec3(7.5f,  0.2f, 0.0f)),
+		Sphere(glm::vec3(0.0f, 0.9f, 0.1f),	glm::vec3(-5.3f,  3.9f, 0.0f))
 	};
 	
 	unsigned int ballVBO, cubeVBO, ballVAO, cubeVAO, EBO;
@@ -79,6 +79,7 @@ int App::run() {
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
 		sun.move(deltaTime);
+		lamp.move(deltaTime);
 
 		mainShader->use();
 
@@ -92,6 +93,8 @@ int App::run() {
 
 		for (int i = 0; i < table.cubeCount; i++)
 			renderCube(*mainShader, table[i], cubeVAO);
+
+		renderLamp(*mainShader, lightShader, lamp, ballVAO, cubeVAO);
 
 		lightShader.use();
 		renderBall(lightShader, lightBall, ballVAO);
@@ -174,16 +177,16 @@ void App::setUniforms()
 	mainShader->setFloat("pointLights.linear", lightBall.linear);
 	mainShader->setFloat("pointLights.quadratic", lightBall.quadratic);
 
-	mainShader->setVec3("spotLight.position", freeCamera.getPosition());
-	mainShader->setVec3("spotLight.direction", freeCamera.Front);
-	mainShader->setVec3("spotLight.ambient", 0.0f, 0.0f, 0.0f);
-	mainShader->setVec3("spotLight.diffuse", 1.0f, 1.0f, 1.0f);
-	mainShader->setVec3("spotLight.specular", 1.0f, 1.0f, 1.0f);
-	mainShader->setFloat("spotLight.constant", 1.0f);
-	mainShader->setFloat("spotLight.linear", 0.09);
-	mainShader->setFloat("spotLight.quadratic", 0.032);
-	mainShader->setFloat("spotLight.cutOff", glm::cos(glm::radians(12.5f)));
-	mainShader->setFloat("spotLight.outerCutOff", glm::cos(glm::radians(15.0f)));
+	mainShader->setVec3("spotLight.position", lamp.getLightLocation());
+	mainShader->setVec3("spotLight.direction", lamp.getLightDirection());
+	mainShader->setVec3("spotLight.ambient", lamp.ambient);
+	mainShader->setVec3("spotLight.diffuse", lamp.diffuse);
+	mainShader->setVec3("spotLight.specular", lamp.specular);
+	mainShader->setFloat("spotLight.constant", lamp.constant);
+	mainShader->setFloat("spotLight.linear", lamp.linear);
+	mainShader->setFloat("spotLight.quadratic", lamp.quadratic);
+	mainShader->setFloat("spotLight.cutOff", lamp.cutOff);
+	mainShader->setFloat("spotLight.outerCutOff", lamp.outerCutOff);
 }
 
 App * App::getInstance()
@@ -198,6 +201,24 @@ void App::renderCube(Shader & shader, Cube& cube, unsigned int & vertexArray)
 	shader.setVec3("objectColor", cube.color);
 	shader.setMat4("model", cube.getModelMatrix());
 	glDrawArrays(GL_TRIANGLES, 0, 36);
+}
+
+void App::renderLamp(Shader & main, Shader & light, Lamp& lamp, unsigned int & ballVAO, unsigned int & cubeVAO)
+{
+	main.use();
+	glBindVertexArray(cubeVAO);
+	main.setVec3("objectColor", lamp.stick.color);
+	main.setMat4("model", lamp.getModelMatrix() * lamp.stick.getModelMatrix());
+	glDrawArrays(GL_TRIANGLES, 0, 36);
+	main.setVec3("objectColor", lamp.block.color);
+	main.setMat4("model", lamp.getModelMatrix() * lamp.block.getModelMatrix());
+	glDrawArrays(GL_TRIANGLES, 0, 36);
+
+	light.use();
+	glBindVertexArray(ballVAO);
+	light.setVec3("objectColor", lamp.light.color);
+	light.setMat4("model", lamp.getModelMatrix() * lamp.light.getModelMatrix());
+	glDrawElements(GL_TRIANGLES, Sphere::indices().size(), GL_UNSIGNED_SHORT, 0);
 }
 
 void App::renderBall(Shader &shader, Sphere &ball, unsigned int & vertexArray)

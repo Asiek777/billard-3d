@@ -144,6 +144,7 @@
     <ClCompile Include="camera.cpp" />
     <ClCompile Include="cube.cpp" />
     <ClCompile Include="glad.c" />
+    <ClCompile Include="lamp.cpp" />
     <ClCompile Include="pointLight.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="sphere.cpp" />
@@ -162,6 +163,7 @@
     <ClInclude Include="board.h" />
     <ClInclude Include="camera.h" />
     <ClInclude Include="cube.h" />
+    <ClInclude Include="lamp.h" />
     <ClInclude Include="pointLight.h" />
     <ClInclude Include="shader_s.h" />
     <ClInclude Include="sphere.h" />
