@@ -17,6 +17,7 @@ Lamp::Lamp(float _constant, float _linear, float _quadratic,
 	specular = _specular;
 	cutOff = _cutOff;
 	outerCutOff = _outerCutOff;
+	rotateMatrix = glm::mat4(1.0);
 	updateModelMatrix();
 }
 
@@ -30,26 +31,35 @@ void Lamp::move(float deltaFrame)
 	updateModelMatrix();
 }
 
+void Lamp::rotate(float deltaFrame)
+{
+	yawn += deltaFrame * 0.2;
+	rotateMatrix = glm::rotate(glm::mat4(1.0), yawn, glm::vec3(1, 0, 0));
+}
+
 void Lamp::updateModelMatrix()
 {
 	lampModelMat = glm::mat4(1.0);
 	lampModelMat = glm::rotate(lampModelMat, alfa, glm::vec3(0, 0, 1));
+	lampModelMat = glm::translate(lampModelMat, glm::vec3(0, 2, 3));
 	lampModelMat = glm::rotate(lampModelMat, 0.22f * (float)M_PI, glm::vec3(1, 0, 0));
-	lampModelMat = glm::translate(lampModelMat, glm::vec3(0,2,3));
 
 }
 
-glm::mat4 Lamp::getModelMatrix()
+glm::mat4 Lamp::getModelMatrix(bool isRotated)
 {
-	return lampModelMat;
+	if (isRotated)
+		return lampModelMat * rotateMatrix;
+	else
+		return lampModelMat;
 }
 
 glm::vec3 Lamp::getLightLocation()
 {
-	return glm::vec3(lampModelMat * glm::vec4(light.location, 1.0));
+	return glm::vec3(getModelMatrix(true) * glm::vec4(light.location, 1.0));
 }
 
 glm::vec3 Lamp::getLightDirection()
 {
-	return glm::vec3(lampModelMat * glm::vec4(0, 0, -1, 0));
+	return glm::vec3(getModelMatrix(true) * glm::vec4(0, 0, -1, 0));
 }

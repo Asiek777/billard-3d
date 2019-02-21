@@ -211,13 +211,13 @@ void App::renderLamp(Shader & main, Shader & light, Lamp& lamp, unsigned int & b
 	main.setMat4("model", lamp.getModelMatrix() * lamp.stick.getModelMatrix());
 	glDrawArrays(GL_TRIANGLES, 0, 36);
 	main.setVec3("objectColor", lamp.block.color);
-	main.setMat4("model", lamp.getModelMatrix() * lamp.block.getModelMatrix());
+	main.setMat4("model", lamp.getModelMatrix(1) * lamp.block.getModelMatrix());
 	glDrawArrays(GL_TRIANGLES, 0, 36);
 
 	light.use();
 	glBindVertexArray(ballVAO);
 	light.setVec3("objectColor", lamp.light.color);
-	light.setMat4("model", lamp.getModelMatrix() * lamp.light.getModelMatrix());
+	light.setMat4("model", lamp.getModelMatrix(1) * lamp.light.getModelMatrix());
 	glDrawElements(GL_TRIANGLES, Sphere::indices().size(), GL_UNSIGNED_SHORT, 0);
 }
 
@@ -300,6 +300,10 @@ void App::processInput(GLFWwindow *window) {
 		mainShader = gourandShaderPtr;
 	if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS)
 		mainShader = phongShaderPtr;
+	if (glfwGetKey(window, GLFW_KEY_COMMA) == GLFW_PRESS)
+		lamp.rotate(deltaTime);
+	if (glfwGetKey(window, GLFW_KEY_PERIOD) == GLFW_PRESS)
+		lamp.rotate(-deltaTime);
 }
 
 void App::changeCamera() {

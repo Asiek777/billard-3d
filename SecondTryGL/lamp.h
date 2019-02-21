@@ -4,7 +4,11 @@
 class Lamp
 {
 	float alfa = 45;
+	float yawn = 0;
 	glm::mat4 lampModelMat;
+	glm::mat4 rotateMatrix;
+
+	void updateModelMatrix();
 
 public:
 	float constant;
@@ -25,8 +29,8 @@ public:
 		float cutOff, float outerCutOff);
 	~Lamp();
 	void move(float deltaFrame);
-	void updateModelMatrix();
-	glm::mat4 getModelMatrix();
+	void rotate(float deltaFrame);
+	glm::mat4 getModelMatrix(bool isRotated = false);
 	glm::vec3 getLightLocation();
 	glm::vec3 getLightDirection();
 };
