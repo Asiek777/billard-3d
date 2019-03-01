@@ -54,9 +54,14 @@ int App::run() {
 		Sphere(glm::vec3(1.0f, 0.4f, 0.6f),	glm::vec3(7.5f,  0.2f, 0.0f)),
 		Sphere(glm::vec3(0.0f, 0.9f, 0.1f),	glm::vec3(-5.3f,  3.9f, 0.0f))
 	};
-	
+
+
 	unsigned int ballVBO, cubeVBO, ballVAO, cubeVAO, EBO;
 	SetupBuffers(ballVAO, cubeVAO, ballVBO, cubeVBO, EBO);
+
+	//glEnable(GL_FOG);
+	//GLfloat fogColor[] = { 0.5f, 0.5f, 0.5f, 1.0f };
+	//glFogfv(GL_FOG_COLOR, fogColor);
 
 	Shader phongShader("phong.vert", "phong.frag");
 	phongShaderPtr = &phongShader;
@@ -71,8 +76,8 @@ int App::run() {
 	while (!glfwWindowShouldClose(window)) {
 
 		processInput(window);
-		glm::vec4 skyColor = sun.getSkyColor();
-		glClearColor(skyColor.r, skyColor.g, skyColor.b, skyColor.a);
+		glm::vec3 skyColor = isFog ? sun.getFogColor() : sun.getSkyColor();
+		glClearColor(skyColor.r, skyColor.g, skyColor.b, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		float currentFrame = glfwGetTime();
@@ -162,7 +167,9 @@ void App::setUniforms()
 	mainShader->setMat4("view", view);
 	mainShader->setMat4("projection", projection);
 	mainShader->setVec3("viewPos", camera->getPosition());
+	mainShader->setVec3("FogColor", sun.getFogColor());
 	mainShader->setFloat("shininess", 64);
+	mainShader->setBool("isFog", isFog);
 
 	mainShader->setVec3("dirLight.direction", sun.getDirection());
 	mainShader->setVec3("dirLight.ambient", sun.getAmbient());
@@ -287,7 +294,9 @@ void App::processInput(GLFWwindow *window) {
 		followCamera.updateDirection(deltaTime);
 
 	if (glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS)
-		changeCamera();
+		isFog = false;
+	if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS)
+		isFog = true;
 	if (glfwGetKey(window, GLFW_KEY_0) == GLFW_PRESS)
 		camera = cameras[0];
 	if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS)

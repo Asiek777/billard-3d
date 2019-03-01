@@ -39,6 +39,7 @@ struct SpotLight {
 
 in vec3 FragPos;
 in vec3 Normal;
+in vec4 deep;
 
 uniform vec3 viewPos;
 uniform vec3 objectColor;
@@ -46,6 +47,8 @@ uniform float shininess;
 uniform DirLight dirLight;
 uniform PointLight pointLights;
 uniform SpotLight spotLight;
+uniform bool isFog;
+uniform vec3 FogColor;
 
 
 vec3 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir);
@@ -62,7 +65,9 @@ void main()
     result += CalcPointLight(pointLights, norm, FragPos, viewDir);    
 
     result += CalcSpotLight(spotLight, norm, FragPos, viewDir);    
-    
+
+    if(isFog)
+		result = mix(result, FogColor, max(min(-deep.z/deep.w/20, 1.0), 0.0));
     FragColor = vec4(result, 1.0);
 }
 

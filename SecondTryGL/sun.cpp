@@ -17,9 +17,14 @@ glm::vec3 Sun::getSpecular()
 	return specular * lightStrength;
 }
 
-glm::vec4 Sun::getSkyColor()
+glm::vec3 Sun::getSkyColor()
 {
-	return glm::vec4(lightStrength*glm::vec3(0.3, 0.8, 1.), 1.0);
+	return lightStrength*glm::vec3(0.3, 0.8, 1.);
+}
+
+glm::vec3 Sun::getFogColor()
+{
+	return glm::vec3(lightStrength*0.4 + 0.1);
 }
 
 Sun::Sun(glm::vec3 _ambient, glm::vec3 _diffuse,

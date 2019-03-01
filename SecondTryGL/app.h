@@ -40,6 +40,7 @@ class App {
 	Lamp lamp = Lamp(1., 0.09, 0.032,
 		glm::vec3(0.), glm::vec3(1.), glm::vec3(1.),
 		glm::cos(glm::radians(12.5f)), glm::cos(glm::radians(15.0f)));
+	bool isFog = true;
 
 	FreeCamera freeCamera = FreeCamera(glm::vec3(0.f, 0.f, 55.f));
 	ConstCamera constCamera = ConstCamera();
